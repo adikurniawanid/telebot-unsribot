@@ -1,17 +1,35 @@
 import telebot
 import requests
 import json
+import datetime
 from Config.Settings import API_URL, TOKEN_TELEBOT
+
 
 bot = telebot.TeleBot(TOKEN_TELEBOT)
 
 
+def log(message):
+    tanggal = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    namaAwal = message.chat.first_name
+    namaAkhir = message.chat.last_name
+    username = message.chat.username
+    textLog = '{}|{} - {} {}, {} \n'.format(
+        tanggal, username, namaAwal, namaAkhir, message.text)
+    logger = open('logger.txt', 'a')
+    logger.write(f'{textLog} \n')
+    logger.close()
+
+
 def removePrefix(text):
-    return text.split(' ', 1)[1]
+    try:
+        return text.split(' ', 1)[1]
+    except:
+        return " "
 
 
 @bot.message_handler(commands=['query'])
 def query(message):
+    log(message)
     nlParam = removePrefix(message.text)
     api_unsribot = requests.post(
         f'{API_URL}?nlParam={nlParam}')
@@ -22,6 +40,7 @@ def query(message):
 
 @bot.message_handler(commands=['detail'])
 def detail(message):
+    log(message)
     nlParam = removePrefix(message.text)
     api_unsribot = requests.post(
         f'{API_URL}?nlParam={nlParam}')

@@ -15,6 +15,7 @@ def log(message):
     username = message.chat.username
     textLog = '{}|{} - {} {}, {} \n'.format(
         tanggal, username, namaAwal, namaAkhir, message.text)
+    print(textLog)
     logger = open('logger.txt', 'a')
     logger.write(f'{textLog} \n')
     logger.close()
@@ -76,5 +77,10 @@ Query:
     bot.reply_to(message, result)
 
 
-print('telebot unsribot running')
-bot.polling()
+def main():
+    print('telebot unsribot running')
+    bot.infinity_polling(timeout=10, long_polling_timeout=5)
+
+
+if __name__ == '__main__':
+    main()

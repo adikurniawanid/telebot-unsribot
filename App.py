@@ -17,7 +17,7 @@ def log(message):
         tanggal, username, namaAwal, namaAkhir, message.text)
     print(textLog)
     logger = open('logger.txt', 'a')
-    logger.write(f'{textLog} \n')
+    logger.write(f'{textLog}')
     logger.close()
 
 
@@ -39,7 +39,19 @@ def query(message):
     bot.reply_to(message, result)
 
 
-@bot.message_handler(commands=['detail'])
+@bot.message_handler(commands=['result'])
+def result(message):
+    log(message)
+    nlParam = removePrefix(message.text)
+    api_unsribot = requests.post(
+        f'{API_URL}?nlParam={nlParam}')
+    api_unsribot = api_unsribot.json()
+    result = json.dumps(
+        api_unsribot["queryResult"], sort_keys=True, indent=4, separators=(',', ': '))
+    bot.reply_to(message, result)
+
+
+@ bot.message_handler(commands=['detail'])
 def detail(message):
     log(message)
     nlParam = removePrefix(message.text)
@@ -47,7 +59,7 @@ def detail(message):
         f'{API_URL}?nlParam={nlParam}')
     api_unsribot = api_unsribot.json()
     result = f"""
-Token: 
+Token:
 {api_unsribot["kalimat"]}
 
 Kalimat Perintah:
@@ -56,13 +68,13 @@ Kalimat Perintah:
 Tabel:
 {api_unsribot["identifikasiTabel"]}
 
-Kolom Tabel: 
+Kolom Tabel:
 {api_unsribot["identifikasiKolomByTabel"]}
 
-Kondisi: 
+Kondisi:
 {api_unsribot["identifikasiKondisi"]}
 
-Kolom Kondisi: 
+Kolom Kondisi:
 {api_unsribot["identifikasiKolomKondisi"]}
 
 Atribut Kondisi:
@@ -73,6 +85,9 @@ Operator:
 
 Query:
 {api_unsribot["query"]}
+
+Result:
+{json.dumps(api_unsribot["queryResult"], sort_keys=True, indent=4, separators=(',', ': '))}
     """
     bot.reply_to(message, result)
 
